@@ -1,21 +1,21 @@
-import express from "express";
-import { config as dotenvConfig } from "dotenv";
-import colors from "colors";
-import errorHandler from "./middleware/Error/errorMiddleware.js";
-import connectDB from "./config/db/index.js";
-import userRoute from "./routes/UserRoute/userRoute.js";
+const express = require("express");
+const dotenv = require("dotenv");
+const colors = require("colors");
+const errorHandler = require("./middleware/Error/errorMiddleware.js");
+const connectDB = require("./config/db/index.js");
+const userRoute = require("./routes/UserRoute/userRoute.js");
 
-dotenvConfig();
+dotenv.config();
 
-const port = process.env.PORT;
+var port = process.env.PORT;
 
 //Initialize Express
-const app = express();
+var app = express();
 
 //MiddlewareStack
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use((req, res, next) => {
+app.use(function (req, res, next) {
   console.log(req.path, req.method);
   next();
 });
@@ -27,6 +27,6 @@ app.use("/api/users", userRoute);
 //DATABASE CONNECTION
 connectDB();
 
-app.listen(port, () =>
-  console.log(`Server is running at http://localhost:${port}`.blue.bold)
-);
+app.listen(port, function () {
+  console.log("Server is running at http://localhost:" + port);
+});
