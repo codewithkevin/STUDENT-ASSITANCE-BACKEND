@@ -10,38 +10,38 @@ const generateJWT = (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    res.status(400);
-    throw new Error("Please add all Fields");
-  }
+    if (!name || !email || !password) {
+      res.status(400);
+      throw new Error("Please add all Fields");
+    }
 
-  // Check if the user is already registered
-  const userExists = await User.findOne({ email });
+    // Check if the user is already registered
+    const userExists = await User.findOne({ email });
 
-  if (userExists) {
-    res.status(400);
-    throw new Error("User already registered");
-  }
+    if (userExists) {
+      res.status(400);
+      throw new Error("User already registered");
+    }
 
-  // Hash The Passwords
-  const salt = await bcrypt.genSalt(10);
-  const hashedPasswords = await bcrypt.hash(password, salt);
+    // Hash The Passwords
+    const salt = await bcrypt.genSalt(10);
+    const hashedPasswords = await bcrypt.hash(password, salt);
 
-  // Create a new User
-  const user = await User.create({ name, email, password: hashedPasswords });
+    // Create a new User
+    const user = await User.create({ name, email, password: hashedPasswords });
 
-  if (user) {
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       token: generateJWT(user._id),
     });
-  } else {
-    res.status(400);
-    throw new Error("Invalid User Details");
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.message });
   }
 });
 
