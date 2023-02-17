@@ -11,7 +11,19 @@ const generateJWT = (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const {
+      name,
+      email,
+      password,
+      interests,
+      age,
+      username,
+      country,
+      phone_number,
+      workplace,
+      dateOfBirth,
+      account,
+    } = req.body;
 
     if (!name || !email || !password) {
       res.status(400);
@@ -31,7 +43,19 @@ const registerUser = asyncHandler(async (req, res) => {
     const hashedPasswords = await bcrypt.hash(password, salt);
 
     // Create a new User
-    const user = await User.create({ name, email, password: hashedPasswords });
+    const user = await User.create({
+      name,
+      email,
+      interests,
+      age,
+      username,
+      country,
+      phone_number,
+      dateOfBirth,
+      workplace,
+      account,
+      password: hashedPasswords,
+    });
 
     res.status(201).json({
       user,
