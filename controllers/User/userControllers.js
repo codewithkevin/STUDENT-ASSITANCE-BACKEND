@@ -2,6 +2,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const User = require("../../models/UserModels/userModel.js");
+const sendCode = require("../../services/Mail/sendCode.js");
+const {
+  generateConfirmationCode,
+} = require("../../services/Others/generateCode.js");
 
 const generateJWT = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -67,4 +71,17 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser };
+const sendConfirmationCode = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const confirmationCode = generateConfirmationCode();
+
+  // Store the confirmation code somewhere so it can be verified later.
+  // For simplicity, this example stores it as a property of the user object.
+  const user = { email, confirmationCode };
+
+  sendCode.sendConfirmationCode(email, confirmationCode);
+
+  res.status(200).json({ message: "Confirmation code sent." });
+});
+
+module.exports = { registerUser, sendConfirmationCode };
